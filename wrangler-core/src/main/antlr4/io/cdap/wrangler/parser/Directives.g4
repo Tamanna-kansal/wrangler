@@ -196,9 +196,38 @@ identifierList
  ;
 
 
+// Parser Rules for BYTE_SIZE and TIME_DURATION
+
+// Byte Size Argument
+byteSizeArg
+ : BYTE_SIZE
+ ;
+
+// Time Duration Argument
+timeDurationArg
+ : TIME_DURATION
+ ;
+
+
 /*
  * Following are the Lexer Rules used for tokenizing the recipe.
  */
+
+
+// Lexer Rules for BYTE_SIZE and TIME_DURATION
+
+// Byte Size (e.g., 10KB, 20MB)
+BYTE_SIZE
+ : [0-9]+ ( 'KB' | 'MB' | 'GB' | 'TB' | 'bytes?' )
+ ;
+
+// Time Duration (e.g., 150ms, 2s, 5m, 1h)
+TIME_DURATION
+ : [0-9]+ ( 'ms' | 's' | 'm' | 'h' )
+ ;
+
+
+ 
 OBrace   : '{';
 CBrace   : '}';
 SColon   : ';';

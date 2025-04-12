@@ -39,6 +39,9 @@ import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import io.cdap.wrangler.api.parser.ByteSizeToken;
+import io.cdap.wrangler.api.parser.TimeDurationToken;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,19 +52,31 @@ import java.util.Map;
  * used during traversal of the AST tree. The <code>ParserTree#Walker</code>
  * invokes appropriate methods as call backs with information about the node.
  *
- * <p>In order to understand what's being invoked, please look at the grammar file
- * <tt>Directive.g4</tt></p>.
+ * <p>
+ * In order to understand what's being invoked, please look at the grammar file
+ * <tt>Directive.g4</tt>
+ * </p>
+ * .
  *
- * <p>This class exposes a <code>getTokenGroups</code> method for retrieving the
- * <code>RecipeSymbol</code> after visiting. The <code>RecipeSymbol</code> represents
- * all the <code>TokenGroup</code> for all directives in a recipe. Each directive
- * will create a <code>TokenGroup</code></p>
+ * <p>
+ * This class exposes a <code>getTokenGroups</code> method for retrieving the
+ * <code>RecipeSymbol</code> after visiting. The <code>RecipeSymbol</code>
+ * represents
+ * all the <code>TokenGroup</code> for all directives in a recipe. Each
+ * directive
+ * will create a <code>TokenGroup</code>
+ * </p>
  *
- * <p> As the <code>ParseTree</code> is walking through the call graph, it generates
- * one <code>TokenGroup</code> for each directive in the recipe. Each <code>TokenGroup</code>
- * contains parsed <code>Tokens</code> for that directive along with more information like
- * <code>SourceInfo</code>. A collection of <code>TokenGroup</code> consistutes a <code>RecipeSymbol</code>
- * that is returned by this function.</p>
+ * <p>
+ * As the <code>ParseTree</code> is walking through the call graph, it generates
+ * one <code>TokenGroup</code> for each directive in the recipe. Each
+ * <code>TokenGroup</code>
+ * contains parsed <code>Tokens</code> for that directive along with more
+ * information like
+ * <code>SourceInfo</code>. A collection of <code>TokenGroup</code> consistutes
+ * a <code>RecipeSymbol</code>
+ * that is returned by this function.
+ * </p>
  */
 public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Builder> {
   private RecipeSymbol.Builder builder = new RecipeSymbol.Builder();
@@ -78,8 +93,10 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Recipe is made up of Directives and Directives is made up of each individual
-   * Directive. This method is invoked on every visit to a new directive in the recipe.
+   * A Recipe is made up of Directives and Directives is made up of each
+   * individual
+   * Directive. This method is invoked on every visit to a new directive in the
+   * recipe.
    */
   @Override
   public RecipeSymbol.Builder visitDirective(DirectivesParser.DirectiveContext ctx) {
@@ -88,7 +105,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Directive can include identifiers, this method extracts that token that is being
+   * A Directive can include identifiers, this method extracts that token that is
+   * being
    * identified as token of type <code>Identifier</code>.
    */
   @Override
@@ -98,8 +116,10 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Directive can include properties (which are a collection of key and value pairs),
-   * this method extracts that token that is being identified as token of type <code>Properties</code>.
+   * A Directive can include properties (which are a collection of key and value
+   * pairs),
+   * this method extracts that token that is being identified as token of type
+   * <code>Properties</code>.
    */
   @Override
   public RecipeSymbol.Builder visitPropertyList(DirectivesParser.PropertyListContext ctx) {
@@ -123,11 +143,15 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Pragma is an instruction to the compiler to dynamically load the directives being specified
+   * A Pragma is an instruction to the compiler to dynamically load the directives
+   * being specified
    * from the <code>DirectiveRegistry</code>. These do not affect the data flow.
    *
-   * <p>E.g. <code>#pragma load-directives test1, test2, test3;</code> will collect the tokens
-   * test1, test2 and test3 as dynamically loadable directives. <p>
+   * <p>
+   * E.g. <code>#pragma load-directives test1, test2, test3;</code> will collect
+   * the tokens
+   * test1, test2 and test3 as dynamically loadable directives.
+   * <p>
    */
   @Override
   public RecipeSymbol.Builder visitPragmaLoadDirective(DirectivesParser.PragmaLoadDirectiveContext ctx) {
@@ -139,7 +163,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Pragma version is a informational directive to notify compiler about the grammar that is should
+   * A Pragma version is a informational directive to notify compiler about the
+   * grammar that is should
    * be using to parse the directives below.
    */
   @Override
@@ -149,8 +174,10 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Directive can include number ranges like start:end=value[,start:end=value]*. This
-   * visitor method allows you to collect all the number ranges and create a token type
+   * A Directive can include number ranges like
+   * start:end=value[,start:end=value]*. This
+   * visitor method allows you to collect all the number ranges and create a token
+   * type
    * <code>Ranges</code>.
    */
   @Override
@@ -163,11 +190,9 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
       if (text.startsWith("'") && text.endsWith("'")) {
         text = text.substring(1, text.length() - 1);
       }
-      Triplet<Numeric, Numeric, String> val =
-        new Triplet<>(new Numeric(new LazyNumber(numbers.get(0).getText())),
-                      new Numeric(new LazyNumber(numbers.get(1).getText())),
-                      text
-        );
+      Triplet<Numeric, Numeric, String> val = new Triplet<>(new Numeric(new LazyNumber(numbers.get(0).getText())),
+          new Numeric(new LazyNumber(numbers.get(1).getText())),
+          text);
       output.add(val);
     }
     builder.addToken(new Ranges(output));
@@ -185,8 +210,10 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Directive can consist of column specifiers. These are columns that the directive
-   * would operate on. When a token of type column is visited, it would generate a token
+   * A Directive can consist of column specifiers. These are columns that the
+   * directive
+   * would operate on. When a token of type column is visited, it would generate a
+   * token
    * type of type <code>ColumnName</code>.
    */
   @Override
@@ -196,8 +223,10 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * A Directive can consist of text field. These type of fields are enclosed within
-   * a single-quote or a double-quote. This visitor method extracts the string value
+   * A Directive can consist of text field. These type of fields are enclosed
+   * within
+   * a single-quote or a double-quote. This visitor method extracts the string
+   * value
    * within the quotes and creates a token type <code>Text</code>.
    */
   @Override
@@ -232,7 +261,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   /**
    * A Directive can include a expression or a condition to be evaluated. When
    * such a token type is found, the visitor extracts the expression and generates
-   * a token type <code>Expression</code> to be added to the <code>TokenGroup</code>
+   * a token type <code>Expression</code> to be added to the
+   * <code>TokenGroup</code>
    */
   @Override
   public RecipeSymbol.Builder visitCondition(DirectivesParser.ConditionContext ctx) {
@@ -248,7 +278,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
 
   /**
    * A Directive has name and in the parsing context it's called a command.
-   * This visitor methods extracts the command and creates a toke type <code>DirectiveName</code>
+   * This visitor methods extracts the command and creates a toke type
+   * <code>DirectiveName</code>
    */
   @Override
   public RecipeSymbol.Builder visitCommand(DirectivesParser.CommandContext ctx) {
@@ -257,7 +288,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * This visitor methods extracts the list of columns specified. It creates a token
+   * This visitor methods extracts the list of columns specified. It creates a
+   * token
    * type <code>ColumnNameList</code> to be added to <code>TokenGroup</code>.
    */
   @Override
@@ -272,7 +304,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * This visitor methods extracts the list of numeric specified. It creates a token
+   * This visitor methods extracts the list of numeric specified. It creates a
+   * token
    * type <code>NumericList</code> to be added to <code>TokenGroup</code>.
    */
   @Override
@@ -287,7 +320,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * This visitor methods extracts the list of booleans specified. It creates a token
+   * This visitor methods extracts the list of booleans specified. It creates a
+   * token
    * type <code>BoolList</code> to be added to <code>TokenGroup</code>.
    */
   @Override
@@ -302,7 +336,8 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
   }
 
   /**
-   * This visitor methods extracts the list of strings specified. It creates a token
+   * This visitor methods extracts the list of strings specified. It creates a
+   * token
    * type <code>StringList</code> to be added to <code>TokenGroup</code>.
    */
   @Override
@@ -316,6 +351,88 @@ public final class RecipeVisitor extends DirectivesBaseVisitor<RecipeSymbol.Buil
     builder.addToken(new TextList(strs));
     return builder;
   }
+
+  /**
+   * A Directive can consist of a ByteSize value (e.g., 10MB, 5GB).
+   * This visitor method extracts the byte size value and adds a ByteSizeToken to
+   * the token group.
+   */
+  @Override
+  public RecipeSymbol.Builder visitByteSizeArg(DirectivesParser.ByteSizeArgContext ctx) {
+    // Get the raw text, e.g., "10MB"
+    String text = ctx.getText();
+    // Convert text to a canonical byte count.
+    // You can implement a conversion helper; for now, we'll use a simple example:
+    long bytes = parseByteSize(text);
+    builder.addToken(new ByteSizeToken(bytes));
+    return builder;
+  }
+
+  /**
+   * A Directive can consist of a Time Duration value (e.g., 150ms, 2s).
+   * This visitor method extracts the time duration value and adds a
+   * TimeDurationToken to the token group.
+   */
+  @Override
+  public RecipeSymbol.Builder visitTimeDurationArg(DirectivesParser.TimeDurationArgContext ctx) {
+    String text = ctx.getText();
+    // Convert text to a canonical duration, for example, milliseconds.
+    long duration = parseTimeDuration(text);
+    builder.addToken(new TimeDurationToken(duration));
+    return builder;
+  }
+
+  /**
+   * Optional helper method to convert byte size text (e.g., "10MB") to a long
+   * value in bytes.
+   */
+  private long parseByteSize(String text) {
+    text = text.toUpperCase();
+    long multiplier = 1;
+    if (text.endsWith("KB")) {
+      multiplier = 1024;
+      text = text.substring(0, text.length() - 2);
+    } else if (text.endsWith("MB")) {
+      multiplier = 1024 * 1024;
+      text = text.substring(0, text.length() - 2);
+    } else if (text.endsWith("GB")) {
+      multiplier = 1024 * 1024 * 1024;
+      text = text.substring(0, text.length() - 2);
+    } else if (text.endsWith("TB")) {
+      multiplier = 1024L * 1024L * 1024L * 1024L;
+      text = text.substring(0, text.length() - 2);
+    }
+    return Long.parseLong(text) * multiplier;
+  }
+
+  /**
+   * Optional helper method to convert time duration text (e.g., "150ms", "2s") to
+   * a long value in milliseconds.
+   */
+  private long parseTimeDuration(String text) {
+    text = text.toLowerCase();
+    long multiplier = 1;
+    if (text.endsWith("ms")) {
+      multiplier = 1;
+      text = text.substring(0, text.length() - 2);
+    } else if (text.endsWith("s")) {
+      multiplier = 1000;
+      text = text.substring(0, text.length() - 1);
+    } else if (text.endsWith("m")) {
+      multiplier = 60 * 1000;
+      text = text.substring(0, text.length() - 1);
+    } else if (text.endsWith("h")) {
+      multiplier = 60 * 60 * 1000;
+      text = text.substring(0, text.length() - 1);
+    }
+    return Long.parseLong(text) * multiplier;
+  }
+
+  /**
+   * A Directive can consist of a ByteSize value (e.g., 10MB, 5GB).
+   * This visitor method extracts the byte size value into a token of type
+   * ByteSizeToken.
+   */
 
   private SourceInfo getOriginalSource(ParserRuleContext ctx) {
     int a = ctx.getStart().getStartIndex();

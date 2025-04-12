@@ -17,6 +17,8 @@
 package io.cdap.wrangler.api;
 
 import io.cdap.wrangler.api.parser.Token;
+import io.cdap.wrangler.api.parser.ByteSizeToken;
+import io.cdap.wrangler.api.parser.TimeDurationToken;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,15 +30,27 @@ import java.util.List;
 public final class TokenGroup {
   private final SourceInfo info;
   private final List<Token> tokens;
+  private long byteSize; // To accumulate byte size values
+  private long timeDuration; // To accumulate time duration values
+  private final List<Token> otherTokens; // To store other token types
 
   public TokenGroup() {
     this.info = null;
     this.tokens = new ArrayList<>();
+    this.otherTokens = new ArrayList<>();
   }
 
   public TokenGroup(SourceInfo info) {
     this.info = info;
     this.tokens = new ArrayList<>();
+    this.otherTokens = new ArrayList<>();
+  }
+
+  public TokenGroup(List<Token> tokens) {
+    this();
+    for (Token token : tokens) {
+      addToken(token);
+    }
   }
 
   public void add(Token token) {
@@ -58,4 +72,20 @@ public final class TokenGroup {
   public SourceInfo getSourceInfo() {
     return info;
   }
+
+  public void addToken(Token token) {
+    if (token instanceof ByteSizeToken) {
+      // Handle ByteSize token
+      // For instance, convert to canonical unit (bytes)
+      this.byteSize = ((ByteSizeToken) token).getBytes();
+    } else if (token instanceof TimeDurationToken) {
+      // Handle TimeDuration token
+      // For instance, convert to canonical unit (milliseconds)
+      this.timeDuration = ((TimeDurationToken) token).getMilliseconds();
+    } else {
+      // Handle other token types
+      this.otherTokens.add(token);
+    }
+  }
+
 }
