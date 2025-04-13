@@ -17,9 +17,10 @@
 package io.cdap.wrangler.api.parser;
 
 import java.nio.charset.StandardCharsets;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import io.cdap.wrangler.api.parser.Token;
+import io.cdap.wrangler.api.parser.TokenType;
 
 public class ByteSizeToken implements Token {
     private final long byteSize;

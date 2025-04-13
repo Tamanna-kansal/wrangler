@@ -1,0 +1,22 @@
+{
+    "name": "aggregate-stats",
+    "type": "aggregate",
+    "args": [
+        {
+            "name": "sizeColumn",
+            "type": "string"
+        },
+        {
+            "name": "timeColumn",
+            "type": "string"
+        },
+        {
+            "name": "sizeOutput",
+            "type": "string"
+        },
+        {
+            "name": "timeOutput",
+            "type": "string"
+        }
+    ]
+}
